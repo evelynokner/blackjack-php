@@ -14,7 +14,9 @@ $card_deck[52] = [2, 2, 2, 2,
                     10, 10, 10, 10, #Queen
                     10, 10, 10, 10, #King
                     11, 11, 11, 11]; #Ace
-                    
+
+$blackjack = false;
+
 # ask user if they wish to play game, if true, call play(), else quit
 echo "Welcome to the casino! Would you like to play Blackjack?\n";
 # boolean to play or quit
@@ -31,14 +33,10 @@ function prompt(){
 }
 
 function play(){
-    if (deal_cards()){
-        # blackjack
-    } else
-    {
-    
-    }
-    # if player does not have 21 pts, dealer moves
-    if (!player_move()){
+    deal_cards();
+    player_move();
+    # if player does not automatically get a blackjack, dealer moves
+    if (!$blackjack){
         dealer_move();
     }
     # TODO: track points
@@ -52,20 +50,39 @@ function stop(){
 
 function deal_cards(){
     echo "Dealing cards\n";
-    # if current hand's points = 21, blackjack
-    if(blackjack()){
-       return true; 
-    } else return false;
 }
 
 function player_move(){
     echo "Player's turn\n";
-
+    if (blackjack()){
+        return;
+    } else hit_or_stand();
 }
 
 function dealer_move(){
     echo "Dealer's turn\n";
     
+}
+
+function hit_or_stand(){
+    # gives user option to hit (draw more cards) or stand (leave hand as it is)
+    echo "Would you like to Hit or Stand?";
+    if (readline("H for hit, S for stand") == "H"){
+        hit();
+    } else stand();
+}
+
+function blackjack(){
+    $blackjack = false;
+    return false;
+}
+
+function hit(){
+    echo "User hits";
+}
+
+function stand(){
+    echo "User stands";
 }
 
 ?>
