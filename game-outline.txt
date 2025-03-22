@@ -1,0 +1,16 @@
+Blackjack Game Outline
+
+LOOP
+1. Decide to play/continue or quit
+2. Place a bet with the money in your bank
+3. Deal cards (player (user) and dealer are given 2 random cards. Player (user) is shown their cards and 1 card from the dealer)
+4. Player chooses to hit (draw another card) or stand (keeps their current hand as it is)
+  
+  -> if points > 21, player automatically loses and opponent receives losing player's betted money
+  -> if points == 21, player automatically wins and "Blackjack"
+  -> if player points > opponent's points, player wins
+    -> when player stands, dealer draws cards until points > player's points OR until bust
+
+CARD DECK
+- Initialized array of 52 cards
+- After each round, drawn cards are returned to the deck
