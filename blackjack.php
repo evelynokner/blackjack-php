@@ -1,7 +1,7 @@
 <?php
 # 52 card deck
 # randomly pick 2 cards from deck for player & dealer when round starts
-$card_deck[52] = [2, 2, 2, 2, 
+$card_deck = array(2, 2, 2, 2, 
                     3, 3, 3, 3,
                     4, 4, 4, 4,
                     5, 5, 5, 5,
@@ -13,7 +13,7 @@ $card_deck[52] = [2, 2, 2, 2,
                     10, 10, 10, 10, #Jack
                     10, 10, 10, 10, #Queen
                     10, 10, 10, 10, #King
-                    11, 11, 11, 11]; #Ace
+                    11, 11, 11, 11); #Ace
 
 $blackjack = false;
 
@@ -50,6 +50,9 @@ function stop(){
 
 function deal_cards(){
     echo "Dealing cards\n";
+    global $card_deck;
+    $cards = array_rand($card_deck, 4);
+    echo $card_deck[$cards[0]], " ", $cards[1], "\n";
 }
 
 function player_move(){
