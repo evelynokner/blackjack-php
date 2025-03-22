@@ -69,8 +69,8 @@ function dealer_move(){
 
 function hit_or_stand(){
     # gives user option to hit (draw more cards) or stand (leave hand as it is)
-    echo "Would you like to Hit or Stand?";
-    if (readline("H for hit, S for stand") == "H"){
+    echo "Would you like to Hit or Stand?\n";
+    if (readline("H for hit, S for stand: ") == "H"){
         hit();
     } else stand();
 }
