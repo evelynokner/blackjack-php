@@ -1,23 +1,15 @@
 <?php
 # 52 card deck
 # randomly pick 2 cards from deck for player & dealer when round starts
-$card_deck = array(2, 2, 2, 2,
-                    3, 3, 3, 3,
-                    4, 4, 4, 4,
-                    5, 5, 5, 5,
-                    6, 6, 6, 6,
-                    7, 7, 7, 7,
-                    8, 8, 8, 8,
-                    9, 9, 9, 9,
-                    10, 10, 10, 10,
-                    10, 10, 10, 10, #Jack
-                    10, 10, 10, 10, #Queen
-                    10, 10, 10, 10, #King
-                    11, 11, 11, 11); #Ace
+
+# fill array with 52 1's to represent a card is currently in deck
+# if card_deck[idx] = 0, then the card at idx has been drawn.
+$card_deck = array_fill(0, 52, 1);
 
 $ranks = ["Two", "Three", "Four", "Five", "Six",
             "Seven", "Eight", "Nine", "Ten",
             "Jack", "Queen", "King", "Ace"];
+$rank_value = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11];            
 $suits = ["diamonds", "hearts", "spades", "clubs"];
 
 $blackjack = false;
