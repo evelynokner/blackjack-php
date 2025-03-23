@@ -1,4 +1,5 @@
 <?php
+# https://www.programiz.com/php/online-compiler/
 # 52 card deck
 # randomly pick 2 cards from deck for player & dealer when round starts
 $card_deck = array(2, 2, 2, 2, 
@@ -16,6 +17,8 @@ $card_deck = array(2, 2, 2, 2,
                     11, 11, 11, 11); #Ace
 
 $blackjack = false;
+$player_hand = array();
+$dealer_hand = array();
 
 # ask user if they wish to play game, if true, call play(), else quit
 echo "Welcome to the casino! Would you like to play Blackjack?\n";
@@ -50,9 +53,24 @@ function stop(){
 
 function deal_cards(){
     echo "Dealing cards\n";
+
+    global $player_hand, $dealer_hand;
+    deal_card($player_hand);
+    deal_card($player_hand);
+    
+    deal_card($dealer_hand);
+    deal_card($dealer_hand);
+
+    echo "Player hand: ", $player_hand[0], "\n";
+}
+
+function deal_card($hand){
     global $card_deck;
-    $cards = array_rand($card_deck, 4);
-    echo $card_deck[$cards[0]], " ", $cards[1], "\n";
+    $card = array_rand($card_deck, 1);
+    return array_push($hand, $card);
+    
+    
+    
 }
 
 function player_move(){
@@ -69,8 +87,8 @@ function dealer_move(){
 
 function hit_or_stand(){
     # gives user option to hit (draw more cards) or stand (leave hand as it is)
-    echo "Would you like to Hit or Stand?\n";
-    if (readline("H for hit, S for stand: ") == "H"){
+    echo "Would you like to Hit or Stand?";
+    if (readline("H for hit, S for stand") == "H"){
         hit();
     } else stand();
 }
