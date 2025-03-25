@@ -1,9 +1,9 @@
 <?php
 # 52 card deck
 # randomly pick 2 cards from deck for player & dealer when round starts
-
 # fill array with 52 1's to represent a card is currently in deck
 # if card_deck[idx] = 0, then the card at idx has been drawn.
+
 $card_deck = array_fill(0, 52, 1);
 
 $ranks = ["Two", "Three", "Four", "Five", "Six",
@@ -13,8 +13,13 @@ $rank_value = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11];
 $suits = ["diamonds", "hearts", "spades", "clubs"];
 
 $blackjack = false;
+# -1 = no winner, 0 = player wins, 1 = dealer wins
+$winner = -1;
 $player_hand = array();
 $dealer_hand = array();
+
+$player_points = 0;
+$dealer_points = 0;
 
 # ask user if they wish to play game, if true, call play(), else quit
 echo "Welcome to the casino! Would you like to play Blackjack?\n";
@@ -33,15 +38,22 @@ function prompt(){
 }
 
 function play(){
+    initialize_round();
     deal_cards_first_time();
+    if (gameover()) return;
     player_move();
-    # if player does not automatically get a blackjack, dealer moves
-    if (!$blackjack){
-        dealer_move();
-    }
+    if (gameover()) return;
+    dealer_move();
     # TODO: track points
     show_results();
     echo "playing\n";
+}
+
+function initialize_round(){}
+
+function gameover(){
+    global $winner;
+    return $winner != -1;
 }
 
 function stop(){
@@ -51,26 +63,43 @@ function stop(){
 function deal_cards_first_time(){
     echo "Dealing cards\n";
 
-    global $player_hand, $dealer_hand;
-    array_push($player_hand, deal_card());
-    array_push($player_hand, deal_card());
+    global $player_hand, $dealer_hand, 
+    $player_points, $dealer_points;
+    array_push($player_hand, deal_card(0));
+    array_push($player_hand, deal_card(0));
    
-    array_push($dealer_hand, deal_card());
-    array_push($dealer_hand, deal_card());
+    array_push($dealer_hand, deal_card(1));
+    array_push($dealer_hand, deal_card(1));
 
-    echo "Player hand: ", print_hand($player_hand), "\n";
-    echo "Dealer hand: ", print_hand($dealer_hand), "\n";
-
+    echo "Player hand:\n", print_hand($player_hand), "\n";
+    echo "Dealer hand:\n", print_hand($dealer_hand), "\n";
+    
+    echo "Player points: ", $player_points, "\n";
+    echo "Dealer points: ", $dealer_points, "\n";
 }
 
-function deal_card(){
-    global $card_deck;
+function deal_card($move){
+    # move = 0 (player's move)
+    # move = 1 (dealer's move)
+    global $card_deck, $player_points, $dealer_points,
+    $winner;
     $random_card = array_rand($card_deck, 1);
-    if ($card_deck[$random_card] == 0) { // taken, try again
-        deal_card();
-    } else
-    {
+    if ($card_deck[$random_card] == 0){ // taken, try again
+        deal_card($move);
+    } else {
         $card_deck[$random_card] = 0; // mark the card as taken
+        $value = get_card_points($random_card);
+        if ($move == 0){
+            $player_points += $value;
+            if($player_points == 21){
+                $winner = 0;
+            }
+        } else {
+            $dealer_points += $value;
+            if($dealer_points == 21){
+                $winner = 1;
+            }
+        }
         return $random_card;
     }
 }
@@ -84,7 +113,6 @@ function player_move(){
 
 function dealer_move(){
     echo "Dealer's turn\n";
-   
 }
 
 function hit_or_stand(){
@@ -102,6 +130,7 @@ function blackjack(){
 
 function hit(){
     echo "User hits";
+    # deal cards and check if game over
 }
 
 function stand(){
@@ -112,8 +141,8 @@ function print_hand($hand){
     //echo implode(", ", $hand);
     global $card_deck;
     foreach ($hand as $card) {
-        
-        echo get_card_rank($card), " of ", get_card_suit($card), "\n";
+        echo get_card_rank($card), " of ", get_card_suit($card),
+        "\nPoints: ", get_card_points($card), "\n";
     }
 }
 
@@ -125,6 +154,11 @@ function get_card_rank($card_position){
 function get_card_suit($card_position){
     global $suits;
     return $suits[$card_position % 4];
+}
+
+function get_card_points($card_position){
+    global $rank_value;
+    return $rank_value[floor($card_position / 4)];
 }
 
 ?>
