@@ -12,8 +12,7 @@ $ranks = ["Two", "Three", "Four", "Five", "Six",
 $rank_value = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11];            
 $suits = ["diamonds", "hearts", "spades", "clubs"];
 
-$blackjack = false;
-# -1 = no winner, 0 = player wins, 1 = dealer wins
+# -1 = no winner, 0 = player wins, 1 = dealer wins, 2 = tie
 $winner = -1;
 $player_hand = array();
 $dealer_hand = array();
@@ -40,16 +39,28 @@ function prompt(){
 function play(){
     initialize_round();
     deal_cards_first_time();
+    // if a player immediately gets a blackjack after first cards are dealt, end game
     if (gameover()) return;
     player_move();
     if (gameover()) return;
     dealer_move();
-    # TODO: track points
     show_results();
     echo "playing\n";
 }
 
-function initialize_round(){}
+function initialize_round(){
+    global $card_deck, $winner, $player_hand, $dealer_hand,
+    $player_points, $dealer_points;
+    // reset card deck
+    $card_deck = array_fill(0, 52, 1);
+# -1 = no winner, 0 = player wins, 1 = dealer wins, 2 = tie
+$winner = -1;
+$player_hand = array();
+$dealer_hand = array();
+
+$player_points = 0;
+$dealer_points = 0;
+}
 
 function gameover(){
     global $winner;
@@ -91,24 +102,41 @@ function deal_card($move){
         $value = get_card_points($random_card);
         if ($move == 0){
             $player_points += $value;
-            if($player_points == 21){
-                $winner = 0;
-            }
-        } else {
+            update_result(0); // update result for player
+                
+        }
+         else {
             $dealer_points += $value;
-            if($dealer_points == 21){
-                $winner = 1;
-            }
+            update_result(1); // update result for dealer
         }
         return $random_card;
     }
 }
 
+function update_result($side) {
+    global $player_points, $dealer_points,
+    $winner;
+    $points;
+    if ($side == 0) $points = $player_points;
+    else $points = $dealer_points;
+    
+    if($player_points == 21 && $dealer_points == 21){
+                $winner = 2;
+                return; // tie   
+            }
+    if($points == 21){
+        $winner = $side; // player wins
+            }
+    else if($points > 21){
+        // if points on current side is over 21, other side wins
+                if ($side == 0) $winner = 1;
+                else $winner = 0; 
+            }
+}
+
 function player_move(){
     echo "Player's turn\n";
-    if (blackjack()){
-        return;
-    } else hit_or_stand();
+    hit_or_stand();
 }
 
 function dealer_move(){
@@ -123,14 +151,16 @@ function hit_or_stand(){
     } else stand();
 }
 
-function blackjack(){
-    $blackjack = false;
-    return false;
-}
-
 function hit(){
-    echo "User hits";
+    global $player_hand, $player_points, $dealer_points;
+    echo "User hits\n";
     # deal cards and check if game over
+    array_push($player_hand, deal_card(0));
+    echo "Player hand:\n", print_hand($player_hand), "\n";
+    // print player and dealer points again
+    echo "Player points: ", $player_points, "\n";
+    echo "Dealer points: ", $dealer_points, "\n";
+    show_results();
 }
 
 function stand(){
@@ -159,6 +189,17 @@ function get_card_suit($card_position){
 function get_card_points($card_position){
     global $rank_value;
     return $rank_value[floor($card_position / 4)];
+}
+
+function show_results(){
+    # determine if draw
+    global $winner;
+    if($winner == 0) {
+        echo "Player wins!";
+    } else {
+        if($winner == 1) echo "Dealer wins!";
+        else echo "No winner (error)";
+    }
 }
 
 ?>
