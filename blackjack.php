@@ -26,7 +26,7 @@ $bet = 10;
 
 echo "Welcome to the casino!";
 
-# if prompt returns true, play/continue game, else, end game
+# if prompt returns true and bank is bigger than 0, play/continue game, else, end game
 while(prompt() && $bank > 0){
     play();
 } stop();
