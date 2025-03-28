@@ -24,16 +24,20 @@ and sets fixed amount of money player can bet per round */
 $bank = 100;
 $bet = 10;
 
-echo "Welcome to the casino! ";
+echo "Welcome to the casino!";
 
 # if prompt returns true, play/continue game, else, end game
-while(prompt() || $bank > 0){
+while(prompt() && $bank > 0){
     play();
 } stop();
 
 function prompt(){
+    $user_input = readline("\nWould you like to play Blackjack?\nY for yes, N for no: ");
     # returns true if player says Y, else ends game
-    return ("Y" == readline("\nWould you like to play Blackjack?\nY for yes or N for no: "));
+    if($user_input == "Y"){
+        return true;
+    } else return false;
+    }
 }
 
 function play(){
@@ -46,7 +50,6 @@ function play(){
     dealer_move();
     update_bank();
     show_results();
-
 }
 
 function update_bank(){
@@ -153,9 +156,12 @@ function dealer_move(){
     - blackjack
     - OR bust
     - OR points > player's points */
-    echo "\nDEALER'S TURN:\n";
+    
     global $dealer_hand, $dealer_points, 
     $player_points, $winner;
+    
+    echo "\nDEALER'S TURN:\n";
+    
     while(true){
         # deal cards to dealer and update hand
         array_push($dealer_hand, deal_card(1));
