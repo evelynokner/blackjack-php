@@ -1,9 +1,8 @@
 <?php
-# 52 card deck
-# randomly pick 2 cards from deck for player & dealer when round starts
-# fill array with 52 1's to represent a card is currently in deck
-# if card_deck[idx] = 0, then the card at idx has been drawn.
-
+/* 52 card deck
+randomly pick 2 cards from deck for player & dealer when round starts
+fill array with 52 1's to represent a card is currently in deck
+if card_deck[idx] = 0, then the card at idx has been drawn.*/
 $card_deck = array_fill(0, 52, 1);
 
 $ranks = ["Two", "Three", "Four", "Five", "Six",
@@ -20,10 +19,15 @@ $winner = -1;
 $player_points = 0;
 $dealer_points = 0;
 
+/* set fixed amount of money that player has in bank initially 
+and sets fixed amount of money player can bet per round */
+$bank = 100;
+$bet = 10;
+
 echo "Welcome to the casino! ";
 
 # if prompt returns true, play/continue game, else, end game
-while(prompt()){
+while(prompt() || $bank > 0){
     play();
 } stop();
 
@@ -40,7 +44,25 @@ function play(){
     player_move();
     if (gameover()) return;
     dealer_move();
+    update_bank();
     show_results();
+
+}
+
+function update_bank(){
+    global $winner, $bank, $bet;
+    if($winner == 0){
+        # if player wins, add betted money to their bank
+        $bank += $bet;
+        echo "Bank updated: $bank\n";
+        return;
+    }
+    if($winner == 1){
+        # if dealer wins, subtract betted money from player's bank
+        $bank -= $bet;
+        echo "Bank updated: $bank\n";
+        return;
+    } # otherwise, bank is not updated
 }
 
 function initialize_round(){
@@ -50,21 +72,14 @@ function initialize_round(){
     # reset card deck
     $card_deck = array_fill(0, 52, 1);
     # -1 = no winner, 0 = player wins, 1 = dealer wins, 2 = tie
+    # reset winner
     $winner = -1;
+    # reset hands
     $player_hand = array();
     $dealer_hand = array();
-    
+    # reset points
     $player_points = 0;
     $dealer_points = 0;
-}
-
-function gameover(){
-    global $winner;
-    return $winner != -1;
-}
-
-function stop(){
-    echo "Thanks for playing!";
 }
 
 function deal_cards_first_time(){
@@ -89,7 +104,7 @@ function deal_card($move){
     global $card_deck, $winner,
     $player_points, $dealer_points;
     $random_card = array_rand($card_deck, 1);
-    # card taken, try again
+    # card already drawn, try to pick another card
     if ($card_deck[$random_card] == 0){
         deal_card($move);
     } else {
@@ -97,19 +112,21 @@ function deal_card($move){
         $value = get_card_points($random_card);
         if ($move == 0){
             $player_points += $value;
-            update_result(0); # update result for player
+            update_round_result(0); # update result for player
         } else {
             $dealer_points += $value;
-            update_result(1); # update result for dealer
+            update_round_result(1); # update result for dealer
         } return $random_card;
     }
 }
 
-function update_result($side) {
+function update_round_result($side){ # side = who's turn it currently is
     $points;
     global $player_points, $dealer_points, $winner;
     
+    # if it's the player's turn, set $points to player's points
     if ($side == 0) $points = $player_points;
+    # otherwise, set $points to dealer's points
     else $points = $dealer_points;
     # tie if player & dealer both have 21 pts
     if($player_points == 21 && $dealer_points == 21){
@@ -132,8 +149,10 @@ function player_move(){
 }
 
 function dealer_move(){
-    # dealer draws cards until:
-    // blackjack OR bust OR points > player's points
+    /* dealer draws cards until:
+    - blackjack
+    - OR bust
+    - OR points > player's points */
     echo "Dealer's turn\n";
     global $dealer_hand, $dealer_points, 
     $player_points, $winner;
@@ -145,9 +164,9 @@ function dealer_move(){
             $winner = 0;
             return;
         }
-        # dealer wins if:
-        // dealer has more points than player
-        // or dealer has 21 points (blackjack)
+        /* dealer wins if:
+        - dealer has more points than player
+        - OR dealer has 21 points (blackjack) */
         if($dealer_points > $player_points || $dealer_points == 21){
             $winner = 1;
             return;
@@ -205,7 +224,8 @@ function get_card_points($card_position){
 function show_results(){
     # determine if draw
     global $winner, $player_points, $dealer_points, 
-    $player_hand, $dealer_hand;
+    $player_hand, $dealer_hand,
+    $bank;
     if($winner == 0) {
         echo "Player wins!\n";
     } else {
@@ -215,9 +235,25 @@ function show_results(){
     # display new hands
     echo "Player hand:\n", print_hand($player_hand), "\n";
     echo "Dealer hand:\n", print_hand($dealer_hand), "\n";
+    
     # display player and dealer points
     echo "Player points: ", $player_points, "\n";
     echo "Dealer points: ", $dealer_points, "\n";
+    
+    if($bank <= 0){
+        echo "Player is out of money!\n";
+    }
+   
+}
+
+function gameover(){
+    global $winner;
+    update_bank();
+    return $winner != -1;
+}
+
+function stop(){
+    echo "Thanks for playing!";
 }
 
 ?>
