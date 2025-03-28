@@ -32,8 +32,8 @@ while(prompt() || $bank > 0){
 } stop();
 
 function prompt(){
-    # returns true if user says Y, else ends game
-    return ("Y" == readline("Would you like to play Blackjack?\nY for yes or N for no: "));
+    # returns true if player says Y, else ends game
+    return ("Y" == readline("\nWould you like to play Blackjack?\nY for yes or N for no: "));
 }
 
 function play(){
@@ -54,13 +54,13 @@ function update_bank(){
     if($winner == 0){
         # if player wins, add betted money to their bank
         $bank += $bet;
-        echo "Bank updated: $bank\n";
+        echo "\nBank updated: $$bank\n";
         return;
     }
     if($winner == 1){
         # if dealer wins, subtract betted money from player's bank
         $bank -= $bet;
-        echo "Bank updated: $bank\n";
+        echo "\nBank updated: $$bank\n";
         return;
     } # otherwise, bank is not updated
 }
@@ -91,11 +91,11 @@ function deal_cards_first_time(){
     array_push($dealer_hand, deal_card(1));
     array_push($dealer_hand, deal_card(1));
 
-    echo "\nPlayer hand:\n", print_hand($player_hand), "\n";
-    echo "Dealer hand:\n", print_hand($dealer_hand), "\n";
+    echo "\nPlayer's hand:\n", print_hand($player_hand), "\n";
+    echo "Dealer's hand:\n", print_hand($dealer_hand), "\n";
     
-    echo "Player points: ", $player_points, "\n";
-    echo "Dealer points: ", $dealer_points, "\n";
+    echo "Player's points: ", $player_points, "\n";
+    echo "Dealer's points: ", $dealer_points, "\n";
 }
 
 function deal_card($move){
@@ -144,7 +144,7 @@ function update_round_result($side){ # side = who's turn it currently is
 }
 
 function player_move(){
-    echo "\nPlayer's turn:\n";
+    echo "\nPLAYER'S TURN:\n";
     hit_or_stand();
 }
 
@@ -153,7 +153,7 @@ function dealer_move(){
     - blackjack
     - OR bust
     - OR points > player's points */
-    echo "Dealer's turn\n";
+    echo "\nDEALER'S TURN:\n";
     global $dealer_hand, $dealer_points, 
     $player_points, $winner;
     while(true){
@@ -177,7 +177,7 @@ function dealer_move(){
 }
 
 function hit_or_stand(){
-    # gives user option to hit (draw more cards) or stand (leave hand as it is)
+    # gives player option to hit (draw more cards) or stand (leave hand as it is)
     echo "Would you like to Hit or Stand?\n";
     if (readline("H for hit, S for stand: ") == "H"){
         hit();
@@ -186,23 +186,22 @@ function hit_or_stand(){
 
 function hit(){
     global $player_hand, $player_points, $dealer_points;
-    echo "User hits\n";
+    echo "Player hits\n";
     # deal cards and check if game over
     array_push($player_hand, deal_card(0));
-    echo "Player hand:\n", print_hand($player_hand), "\n";
     # print player and dealer points again
     show_results();
 }
 
 function stand(){
-    echo "User stands\n";
+    echo "Player stands\n";
 }
 
 function print_hand($hand){
     global $card_deck;
     foreach ($hand as $card){
         echo get_card_rank($card), " of ", get_card_suit($card),
-        "\nPoints: ", get_card_points($card), "\n";
+        " - ", get_card_points($card), " points\n";
     }
 }
 
@@ -227,23 +226,24 @@ function show_results(){
     $player_hand, $dealer_hand,
     $bank;
     if($winner == 0) {
-        echo "Player wins!\n";
+        echo "\nPLAYER WINS!\n";
     } else {
-        if($winner == 1) echo "Dealer wins!\n";
-        else echo "No winner (error)\n";
+        if($winner == 1) echo "\nDEALER WINS!\n";
+        # check for errors
+        else echo "\nNo winner (error)\n";
     }
     # display new hands
-    echo "Player hand:\n", print_hand($player_hand), "\n";
-    echo "Dealer hand:\n", print_hand($dealer_hand), "\n";
+    echo "\nPlayer's hand:\n", print_hand($player_hand), "\n";
+    echo "Dealer's hand:\n", print_hand($dealer_hand), "\n";
     
     # display player and dealer points
-    echo "Player points: ", $player_points, "\n";
-    echo "Dealer points: ", $dealer_points, "\n";
+    echo "Player's points: ", $player_points, "\n";
+    echo "Dealer's points: ", $dealer_points, "\n";
     
+    # if there's no more money in bank, end game
     if($bank <= 0){
         echo "Player is out of money!\n";
     }
-   
 }
 
 function gameover(){
